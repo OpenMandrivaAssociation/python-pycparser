@@ -11,6 +11,7 @@ Group:		Development/Python
 Url:		https://github.com/eliben/pycparser
 BuildArch:	noarch
 BuildRequires:  pkgconfig(python)
+BuildRequires:	pkgconfig(python3)
 BuildRequires:  pythonegg(setuptools)
 
 
@@ -21,16 +22,37 @@ pycparser is a complete parser of the C language, written in
         It parses C code into an AST and can serve as a front-end for
         C compilers or analysis tools.
 
+%package -n python2-%{module}
+Summary:	C parser in Python
+Group:		Development/Python
+
+%description -n python2-%{module}
+pycparser is a complete parser of the C language, written in
+        pure Python using the PLY parsing library.
+        It parses C code into an AST and can serve as a front-end for
+        C compilers or analysis tools.
+
+
 %prep
 %setup -q -n %{oname}-%{version}
 perl -i -pe 's/\r\n/\n/gs' LICENSE
+cp -a . %{py2dir}
+find %{py2dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python2}|'
 
 %build
-python setup.py build
+%{__python} setup.py build
+
+pushd %{py2dir}
+%{__python2} setup.py build
+popd
+
 
 %install
-python setup.py install --root=%{buildroot}
+%{__python} setup.py install --skip-build --root %{buildroot}
 
+pushd %{py2dir}
+%{__python2} setup.py install --skip-build --root %{buildroot}
+popd
 
 
 %check
@@ -44,3 +66,9 @@ cd -
 %{py_puresitedir}/pycparser/ply/*.py*
 %{py_puresitedir}/pycparser*.egg-info
 %{py_puresitedir}/pycparser/_c_ast.cfg
+
+%files -n python2-%{module}
+%{py2_puresitedir}/pycparser/*.py*
+%{py2_puresitedir}/pycparser/ply/*.py*
+%{py2_puresitedir}/pycparser*.egg-info
+%{py2_puresitedir}/pycparser/_c_ast.cfg
