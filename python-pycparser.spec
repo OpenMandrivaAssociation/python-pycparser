@@ -3,7 +3,7 @@
 
 Name:		python-%{module}
 Version:	2.10
-Release:	2
+Release:	3
 Summary:	C parser in Python
 Source0:	http://pypi.python.org/packages/source/p/%{oname}/%{oname}-%{version}.tar.gz
 License:	BSD
