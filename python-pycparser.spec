@@ -1,74 +1,53 @@
-%define	oname	pycparser
-%define	module	cparser
+%define module pycparser
+%bcond tests 1
 
 Name:		python-%{module}
-Version:	2.10
-Release:	3
+Version:	2.23
+Release:	1
 Summary:	C parser in Python
-Source0:	http://pypi.python.org/packages/source/p/%{oname}/%{oname}-%{version}.tar.gz
-License:	BSD
+License:	BSD-3-Clause
 Group:		Development/Python
-Url:		https://github.com/eliben/pycparser
-BuildArch:	noarch
-BuildRequires:  pkgconfig(python)
-BuildRequires:	pkgconfig(python3)
-BuildRequires:  pythonegg(setuptools)
+URL:		https://github.com/eliben/pycparser
+Source0:	%{URL}/archive/release_v%{version}/%{module}-%{version}.tar.gz#/%{name}-%{version}.tar.gz
+BuildSystem:	python
+BuildArch:		noarch
+BuildRequires:	dos2unix
+BuildRequires:	pkgconfig(python)
+BuildRequires:  python%{pyver}dist(pip)
+BuildRequires:  python%{pyver}dist(setuptools)
+BuildRequires:  python%{pyver}dist(wheel)
+%if %{with tests}
+BuildRequires:	python%{pyver}dist(pytest)
+%endif
 
-
+Obsoletes: python2-%{module} < %{version}-%{release}
 
 %description
 pycparser is a complete parser of the C language, written in
-        pure Python using the PLY parsing library.
-        It parses C code into an AST and can serve as a front-end for
-        C compilers or analysis tools.
+pure Python using the PLY parsing library.
 
-%package -n python2-%{module}
-Summary:	C parser in Python
-Group:		Development/Python
-
-%description -n python2-%{module}
-pycparser is a complete parser of the C language, written in
-        pure Python using the PLY parsing library.
-        It parses C code into an AST and can serve as a front-end for
-        C compilers or analysis tools.
-
+It parses C code into an AST and can serve as a front-end for
+C compilers or analysis tools.
 
 %prep
-%setup -q -n %{oname}-%{version}
-perl -i -pe 's/\r\n/\n/gs' LICENSE
-cp -a . %{py2dir}
-find %{py2dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python2}|'
+%autosetup -n %{module}-release_v%{version} -p1
+dos2unix LICENSE
 
 %build
-%{__python} setup.py build
-
-pushd %{py2dir}
-%{__python2} setup.py build
-popd
-
+%py_build
 
 %install
-%{__python} setup.py install --skip-build --root %{buildroot}
+%py_install
 
-pushd %{py2dir}
-%{__python2} setup.py install --skip-build --root %{buildroot}
-popd
-
-
+%if %{with tests}
 %check
-cd tests
-python all_tests.py
-cd -
+export CI=true
+export PYTHONPATH=%{buildroot}%{python_sitelib}:%{python_sitelib}
+pytest
+%endif
 
 %files
-%doc CHANGES LICENSE README.rst
-%{py_puresitedir}/pycparser/*.py*
-%{py_puresitedir}/pycparser/ply/*.py*
-%{py_puresitedir}/pycparser*.egg-info
-%{py_puresitedir}/pycparser/_c_ast.cfg
-
-%files -n python2-%{module}
-%{py2_puresitedir}/pycparser/*.py*
-%{py2_puresitedir}/pycparser/ply/*.py*
-%{py2_puresitedir}/pycparser*.egg-info
-%{py2_puresitedir}/pycparser/_c_ast.cfg
+%doc README.rst examples/
+%license LICENSE
+%{python_sitelib}/%{module}
+%{python_sitelib}/%{module}-%{version}*.*-info
