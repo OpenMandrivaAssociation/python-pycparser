@@ -10,7 +10,7 @@
 
 Name:		python-%{module}
 Version:	3.0
-Release:	1
+Release:	2
 Summary:	C parser in Python
 License:	BSD-3-Clause
 Group:		Development/Python
