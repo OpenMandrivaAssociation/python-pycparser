@@ -1,25 +1,16 @@
 %define module pycparser
-# release tag conditional added for 3.0 which uses is 3.00 numbering
-# which confuses the build versioning.
-# Set useoversion conditional to 0 to use regular release version numbering
-# leave this set up
-%bcond useoversion 1
-%define oversion 3.00
 
-%bcond tests 1
+# Tests need pytest, which is not rebuilt for this Python yet.
+%bcond tests 0
 
 Name:		python-%{module}
-Version:	3.0
-Release:	2
+Version:	3.11
+Release:	1
 Summary:	C parser in Python
 License:	BSD-3-Clause
 Group:		Development/Python
 URL:		https://github.com/eliben/pycparser
-%if %{with useoversion}
-Source0:	%{URL}/archive/release_v%{oversion}/%{module}-%{oversion}.tar.gz#/%{name}-%{version}.tar.gz
-%else
-Source0:	%{URL}/archive/release_v%{version}/%{module}-%{version}.tar.gz#/%{name}-%{version}.tar.gz
-%endif
+Source0:	https://files.pythonhosted.org/packages/source/p/pycparser/pycparser-%{version}.tar.gz
 
 BuildSystem:	python
 BuildArch:		noarch
@@ -39,7 +30,7 @@ Obsoletes: python2-%{module} < %{version}-%{release}
 
 %description
 pycparser is a complete parser of the C language, written in
-pure Python using the PLY parsing library.
+pure Python.
 
 It parses C code into an AST and can serve as a front-end for
 C compilers or analysis tools.
