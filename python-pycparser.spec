@@ -15,7 +15,7 @@ Source0:	https://files.pythonhosted.org/packages/source/p/pycparser/pycparser-%{
 BuildSystem:	python
 BuildArch:		noarch
 BuildRequires:	dos2unix
-BuildRequires:	pkgconfig(python)
+BuildRequires:	pkgconfig(python3)
 BuildRequires:  python%{pyver}dist(pip)
 BuildRequires:  python%{pyver}dist(setuptools)
 BuildRequires:  python%{pyver}dist(wheel)
